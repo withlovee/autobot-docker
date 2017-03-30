@@ -113,15 +113,15 @@ function renderTree(boxes) {
 	}
 }
 
-function renderMappings(boxes, template) {
+function renderMappings(template) {
+    var i = 0;
     for (m in template.mapping) {
-        for (i in boxes) {
-            if (boxes[i].path == template.mapping[m]) {
-                var btn = `<button class="element" id="el`+i+`" draggable="true" ondragstart="drag(event)" data-path="`+boxes[i].path+`">`+boxes[i].name+` (`+boxes[i].type+`)</button>`;
-                $(".mapping-tree #" + m).html(btn);
-                break;
-            }
-        }
+        i++;
+        if (template.mapping[m].path === undefined) {
+        	continue;
+		}
+        var btn = `<button class="element" id="el`+i+`" draggable="true" ondragstart="drag(event)" data-path="`+template.mapping[m].path+`">`+template.mapping[m].name +`)</button>`;
+        $(".mapping-tree #" + m).html(btn);
     }
 }
 
@@ -132,7 +132,7 @@ function getTree(data) {
 		renderTree(result);
 
 		$.get('/api/get?template=template', function(template) {
-		    renderMappings(result, template);
+		    renderMappings(template);
 
 		});
 	});

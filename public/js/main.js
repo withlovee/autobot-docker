@@ -131,7 +131,18 @@ function getPath(element) {
 }
 
 function getExtraData() {
-	
+	var extras = [];
+	$('.extra-field-box').each(function(extraBox) {
+		var key = $(this).find('input').val();
+		var button = $(this).find('button.element');
+		var name = button.html();
+		var path = $(this).find('button.element').data('path');
+		// var obj = {
+		// 	name: name,
+		// 	path: path
+		// };
+		console.log(key,val);
+	});
 }
 
 function getMapping() {
@@ -157,7 +168,7 @@ function getMapping() {
 		results[fields[i]] = path;
 	}
 
-	results = results.concat(getExtraData());
+	results['extra'] = getExtraData();
 
 	return results;
 }

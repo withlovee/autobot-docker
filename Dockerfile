@@ -13,4 +13,4 @@ RUN npm install pm2 -g
 COPY . /usr/src/app
 
 EXPOSE 80
-CMD [ "pm2", "start", "index.js" ]
+CMD [ "pm2", "start", "/usr/src/app/index.js" ]

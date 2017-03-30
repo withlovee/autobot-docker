@@ -130,6 +130,10 @@ function getPath(element) {
 	}
 }
 
+function getExtraData() {
+	
+}
+
 function getMapping() {
 	var fields = [
 		'account_app',
@@ -152,6 +156,8 @@ function getMapping() {
 		var path = getPath($('#' + fields[i]));
 		results[fields[i]] = path;
 	}
+
+	results = results.concat(getExtraData());
 
 	return results;
 }
@@ -191,6 +197,12 @@ $('.fire').click(function() {
 		template: template,
 		data: data
 	}, function( data ) {
-		$('#output').val(JSON.stringify(data));
+		if (data.success) {
+			$('#output').val(JSON.stringify(data.results));
+			// show green tick (/)
+		} else {
+			$('#output').val('');
+			// show red (x)
+		}
 	});
 });

@@ -38,6 +38,7 @@ a, button {
 textarea.form-control {
 	background-color: rgba(255,143,28, 0.1);
 	border-color: rgba(219,138,57, 0.2);
+	font-family: 'Consolas';
 }
 textarea.form-control:focus {
 	border-color: rgba(219,138,57, 0.2);

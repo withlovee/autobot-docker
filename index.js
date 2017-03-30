@@ -46,12 +46,10 @@ app.get('/api/get', function (req, res) {
 })
 
 function getData(pathObj, data) {
-	if (!pathObj) {
+	if (Object.keys(pathObj).length == 0) {
 		return null;
 	} 
-
 	var pathArr = pathObj.path.split('\\');
-	console.log(pathArr);
 	var cursor = data;
 	for (i in pathArr) {
 		if (pathArr[i] == '' || pathArr[i] == '$' || pathArr[i] == 'root') continue;
@@ -60,7 +58,6 @@ function getData(pathObj, data) {
 		} else {
 			return null;
 		}
-		console.log(cursor);
 	}
 	
 	return cursor;
@@ -69,61 +66,88 @@ function getData(pathObj, data) {
 function getProductData(parentPath, dataPath, data) {
 	if (!dataPath) return null;
 	var relativePath = dataPath.path.replace(parentPath.path, '');
-
-	return getData(relativePath, data);
+	// console.log(data);
+	var data = getData({path: relativePath}, data);
+	return data;
 }
 
-function loopProduct(mapping, data) {
-	if (mapping.products) {
-		var productNode = getData(mapping.products, data);
-		var products = [];
+function loopProduct(mapping, products) {
 
-		for (i in productNode) {
+	return products.map(function(product) {
+		return {
+			id: getProductData(mapping.products, mapping.product_id, product),
+			price: getProductData(mapping.products, mapping.price, product),
+			quantity: getProductData(mapping.products, mapping.quantity, product)
+		}
+	})
+}
+
+function loopProduct2(mapping, data) {
+	var ids = getData(mapping.product_id, data);
+	var quantities = getData(mapping.quantity, data);
+	var prices = getData(mapping.price, data);
+
+	var products = [];
+	
+	if (ids) {
+
+		for(i in ids) {
 			products.push({
-				id: getProductData(mapping.products, mapping.product_id, productNode),
-				price: getProductData(mapping.products, mapping.price, productNode),
-				quantity: getProductData(mapping.products, mapping.quantity, productNode)
+				id: ids[i],
+				quantity: quantities[i],
+				price: prices[i]
 			});
 		}
 	}
+
+	return products;
 }
 
 function convert(mapping, data) {
-	var product = loopProduct(mapping, data);
 
 	var event = {
-		"event": getData(mapping.event_type, data),
-		"id": getData(mapping.transaction_id, data),
-		"currency": getData(mapping.currency, data),
-		"product": getData(mapping.products, data)
+		event: getData(mapping.event_type, data),
+		id: getData(mapping.transaction_id, data),
+		currency: getData(mapping.currency, data),
+		product: getData(mapping.products, data)
 	};
 
+	if (event.product && Object.keys(mapping.product_id).length > 0) {
+		event.product = loopProduct(mapping, event.product)
+	} else {
+		event.product = loopProduct2(mapping, data)		
+	}
+
 	return {
-		"account":{
-			"an": getData(mapping.account_app, data),
-			"cn": getData(mapping.account_currency, data),
-			"ln": getData(mapping.account_language, data)
+		account:{
+			an: getData(mapping.account_app, data),
+			cn: getData(mapping.account_currency, data),
+			ln: getData(mapping.account_language, data)
 		},
-		"site_type": getData(mapping.site_type, data),
-		"id": {
-			"gaid": getData(mapping.gaid, data)
+		site_type: getData(mapping.site_type, data),
+		id: {
+			gaid: getData(mapping.gaid, data)
 		},
-		"events": [ event ]
+		events: [ event ]
 	};
 
 }
 
 app.get('/api/convert', function (req, res) {
 
-		console.log(req.query.template);
 	// should we handle file not found?
 	fs.readFile(req.query.template + '.json', function read(err, data) {
 		if (err) {
 			throw err;
 		}
-		var json = JSON.parse(data);
+		try {
+			var json = JSON.parse(data);
 
-		res.json(convert(json.mapping, JSON.parse(req.query.data)));
+			res.json({ success: true, results: convert(json.mapping, JSON.parse(req.query.data))});
+
+		} catch(ex) {
+			res.json({ success: false })
+		}
 	});
 
 })

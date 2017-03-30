@@ -114,17 +114,20 @@ function renderTree(boxes) {
 	}
 }
 
-function renderMappings(boxes, template) {
-    for (m in template.mapping) {
-        for (i in boxes) {
-            if (boxes[i].path == template.mapping[m].path) {
-                var btn = `<button class="element" id="nel`+i+`" draggable="true" ondragstart="drag(event)" data-path="`+boxes[i].path+`">`+boxes[i].name+` (`+boxes[i].type+`)</button>`;
-                $(".mapping-tree #" + m).html(btn);
-                $('#el'+i).remove();
-                break;
-            }
-        }
-    }
+function renderMappings(template) {
+	var i = 0;
+	for (m in template.mapping) {
+		for (i in boxes) {
+			if (template.mapping[m].path === undefined) {
+				continue;
+			} else if (boxes[i].path == template.mapping[m].path) {
+				var btn = `<button class="element" id="nel`+i+`" draggable="true" ondragstart="drag(event)" data-path="`+boxes[i].path+`">`+boxes[i].name+` (`+boxes[i].type+`)</button>`;
+				$(".mapping-tree #" + m).html(btn);
+				$('#el'+i).remove();
+				break;
+			}
+		}
+	}
 }
 
 function getTree(data) {
@@ -134,7 +137,7 @@ function getTree(data) {
 		renderTree(result);
 
 		$.get('/api/get?template=template', function(template) {
-		    renderMappings(result, template);
+			renderMappings(template);
 
 		});
 	});
@@ -216,7 +219,7 @@ function save() {
 
 
 $('#edit-template-modal').on('shown.bs.modal', function () {
- 	getTree();
+	getTree();
 })
 
 $('.save').click(function() {

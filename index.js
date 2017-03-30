@@ -52,7 +52,9 @@ function getData(pathObj, data) {
 	var pathArr = pathObj.path.split('\\');
 	var cursor = data;
 	for (i in pathArr) {
-		if (pathArr[i] == '' || pathArr[i] == '$' || pathArr[i] == 'root') continue;
+		console.log('--------------' + pathArr[i]);
+		console.log(cursor);
+		if (pathArr[i] == '' || pathArr[i].slice(-1) == '$' || pathArr[i] == 'root') continue;
 		if (pathArr[i] in cursor) {
 			cursor = cursor[pathArr[i]];
 		} else {
@@ -116,6 +118,11 @@ function convert(mapping, data) {
 		event.product = loopProduct(mapping, event.product)
 	} else {
 		event.product = loopProduct2(mapping, data)		
+	}
+
+	// extra
+	for (key in mapping.extra) {
+		event[key] = getData(mapping.extra[key], data);
 	}
 
 	return {

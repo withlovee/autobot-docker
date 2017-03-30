@@ -21,6 +21,7 @@ $('#edit-template-modal').on('click', '.remove-field-button', function() {
 $('#edit-template-modal').on('click', '.add-button button', function() {
 	var depth = $(this).data('depth');
 	var target = $(this).data('target');
+	$(target).empty();
 	$(target).append(`
 		<div class="field-box extra-field-box" style="margin-left: ' +depth+ 'px">
 			<input type="text" class="form-control extra-input" placeholder="extra_field1">
@@ -58,7 +59,7 @@ function flattenSchema(name, schema, level, parentType, path) {
 				level: level
 			});
 
-			result = result.concat(flattenSchema('$', schema.items, level + offset, null, path + '\\' + name));
+			result = result.concat(flattenSchema(name + '$', schema.items, level + offset, null, path + '\\' + name));
 		}
 
 
@@ -116,9 +117,10 @@ function renderTree(boxes) {
 function renderMappings(boxes, template) {
     for (m in template.mapping) {
         for (i in boxes) {
-            if (boxes[i].path == template.mapping[m]) {
-                var btn = `<button class="element" id="el`+i+`" draggable="true" ondragstart="drag(event)" data-path="`+boxes[i].path+`">`+boxes[i].name+` (`+boxes[i].type+`)</button>`;
+            if (boxes[i].path == template.mapping[m].path) {
+                var btn = `<button class="element" id="nel`+i+`" draggable="true" ondragstart="drag(event)" data-path="`+boxes[i].path+`">`+boxes[i].name+` (`+boxes[i].type+`)</button>`;
                 $(".mapping-tree #" + m).html(btn);
+                $('#el'+i).remove();
                 break;
             }
         }
@@ -147,18 +149,19 @@ function getPath(element) {
 }
 
 function getExtraData() {
-	var extras = [];
+	var extras = {};
 	$('.extra-field-box').each(function(extraBox) {
 		var key = $(this).find('input').val();
 		var button = $(this).find('button.element');
 		var name = button.html();
 		var path = $(this).find('button.element').data('path');
-		// var obj = {
-		// 	name: name,
-		// 	path: path
-		// };
-		console.log(key,val);
+		extras[key] = {
+			name: name,
+			path: path
+		};
 	});
+
+	return extras;
 }
 
 function getMapping() {
@@ -185,6 +188,7 @@ function getMapping() {
 	}
 
 	results['extra'] = getExtraData();
+	console.log(results);
 
 	return results;
 }
@@ -208,6 +212,8 @@ function save() {
 		dataType: 'json'
 	});
 }
+
+
 
 $('#edit-template-modal').on('shown.bs.modal', function () {
  	getTree();

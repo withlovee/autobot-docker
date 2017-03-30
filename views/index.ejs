@@ -14,9 +14,9 @@
 		<form class="form-inline template-select-box">
 			<div class="form-group">
 				<label for="exampleInputName2">Template</label>
-				<select name="" id="" class="form-control">
+				<select name="" id="template" class="form-control">
 					<option value="">-- Please Select --</option>
-					<option value="1">Template 1</option>
+					<option value="template">Template 1</option>
 				</select>
 			</div>
 			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#edit-template-modal"><i class="glyphicon glyphicon-pencil"></i> Edit</button>
@@ -25,13 +25,71 @@
 		</form>
 		<div class="row input-output-box">
 			<div class="col-md-5">
-				<textarea name="" id="input" cols="30" rows="10" class="form-control"></textarea>
+				<textarea name="" id="input" cols="30" rows="10" class="form-control">{
+   "af_content_type":"Hotel",
+   "af_date_a":"02-07-2016",
+   "af_customer_user_id":"1D95523F-5B1B-47D4-89C7-32EB0F9D673E",
+   "af_language_id":"22",
+   "af_room_no":"1",
+   "af_occupancy_adults":"2",
+   "af_date_b":"03-07-2016",
+   "af_logged_in":"0",
+   "af_occupancy_children":"0",
+   "af_content_id":"256861",
+   "af_currency":"THB",
+   "ids":[
+      1,
+      2,
+      3,
+      4,
+      5
+   ],
+   "products":[
+      {
+         "id":2,
+         "name":"An ice sculpture",
+         "price":12.50,
+         "tags":[
+            "cold",
+            "ice"
+         ],
+         "dimensions":{
+            "length":7.0,
+            "width":12.0,
+            "height":9.5
+         },
+         "warehouseLocation":{
+            "latitude":-78.75,
+            "longitude":20.4
+         }
+      },
+      {
+         "id":3,
+         "name":"A blue mouse",
+         "price":25.50,
+         "dimensions":{
+            "length":3.1,
+            "width":1.0,
+            "height":1.0
+         },
+         "warehouseLocation":{
+            "latitude":54.4,
+            "longitude":-32.7
+         }
+      }
+   ],
+   "order_id":12345,
+   "dd":true,
+   "extra_obj":{
+      "extra_key":1234
+   }
+}</textarea>
 			</div>
 			<div class="col-md-2">
 				<p class="text-center"><i class="glyphicon glyphicon-arrow-right convert-arrow"></i></p>
 			</div>
 			<div class="col-md-5">
-				<textarea name="" id="" cols="30" rows="10" class="form-control"></textarea>
+				<textarea name="" id="output" cols="30" rows="10" class="form-control"></textarea>
 			</div>
 		</div>
 		<!-- /.row -->
@@ -62,33 +120,71 @@
 						<div class="col-md-6">
 							<section class="mapping-tree tree">
 								<div class="field-box" style="margin-left: 0px">
-									<label>Transaction ID</label>
-									<div class="drop-box" id="transaction-id" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+									<label>Account</label>
+								</div><!-- field-box -->
+
+								<div class="field-box" style="margin-left: 30px">
+									<label>App</label>
+									<div class="drop-box" id="account_app" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+								</div><!-- field-box -->
+
+								<div class="field-box" style="margin-left: 30px">
+									<label>Currency</label>
+									<div class="drop-box" id="account_currency" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+								</div><!-- field-box -->
+
+								<div class="field-box" style="margin-left: 30px">
+									<label>Language</label>
+									<div class="drop-box" id="account_language" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 								</div><!-- field-box -->
 
 								<div class="field-box" style="margin-left: 0px">
+									<label>Site Type</label>
+									<div class="drop-box" id="site_type" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+								</div><!-- field-box -->
+
+								<div class="field-box" style="margin-left: 0px">
+									<label>ID</label>
+								</div><!-- field-box -->
+
+								<div class="field-box" style="margin-left: 0px">
+									<label>GA ID</label>
+									<div class="drop-box" id="gaid" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+								</div><!-- field-box -->
+
+								<div class="field-box" style="margin-left: 0px">
+									<label>Event Type</label>
+									<div class="drop-box" id="event_type" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+								</div><!-- field-box -->
+
+								<div class="field-box" style="margin-left: 0px">
+									<label>Transaction ID</label>
+									<div class="drop-box" id="transaction_id" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+								</div><!-- field-box -->
+
+								<div class="field-box" style="margin-left: 0px">
+									<label>Currency</label>
+									<div class="drop-box" id="currency" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+								</div><!-- field-box -->
+
+								<div class="field-box" style="margin-left: 0">
 									<label>Products</label>
 									<div class="drop-box" id="products" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 								</div><!-- field-box -->
 
-								<div class="field-box" style="margin-left: 20px">
+								<div class="field-box" style="margin-left: 30px">
 									<label>Product ID</label>
-									<div class="drop-box" id="product-id" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+									<div class="drop-box" id="product_id" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 								</div><!-- field-box -->
 
-								<div class="field-box" style="margin-left: 20px">
+								<div class="field-box" style="margin-left: 30px">
 									<label>Quantity</label>
 									<div class="drop-box" id="quantity" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 								</div><!-- field-box -->
 
-								<div class="field-box" style="margin-left: 20px">
+								<div class="field-box" style="margin-left: 30px">
 									<label>Price</label>
 									<div class="drop-box" id="price" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-								</div><!-- field-box -->
-
-								<div id="box1"></div>
-								<div class="field-box add-button" style="margin-left: 20px">
-									<button type="button" class="btn btn-xs btn-default" data-depth="20" data-target="#box1"><i class="glyphicon glyphicon-plus"></i> Add</button>
 								</div><!-- field-box -->
 
 								<div id="box2"></div>
@@ -104,7 +200,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" class="btn btn-primary save">Save changes</button>
 				</div>
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->

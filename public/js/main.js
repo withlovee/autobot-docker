@@ -124,7 +124,10 @@ function getTree(data) {
 
 function getPath(element) {
 	var button = element.find('button');
-	return button.data('path');
+	return {
+		path: button.data('path'),
+		name: button.html()
+	}
 }
 
 function getMapping() {
@@ -184,9 +187,10 @@ $('.save').click(function() {
 $('.fire').click(function() {
 	var template = $('#template').val();
 	var data = $('#input').val();
-	$.get('/api/convert?template=' + template + '&data=' + data, function( data ) {
-		var result = flattenSchema('root', data.schema, 0, null, '');
-		// console.log(data);
-		$('#output').val(result);
+	$.get('/api/convert', {
+		template: template,
+		data: data
+	}, function( data ) {
+		$('#output').val(JSON.stringify(data));
 	});
 });

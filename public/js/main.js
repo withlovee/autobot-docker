@@ -270,17 +270,21 @@ $('.save').click(function() {
 $('.fire').click(function() {
 	var template = $('#template').val();
 	var data = $('#input').val();
+
+	$('#output').val('');
+	$('.status').hide();
+
 	$.get('/api/convert', {
 		template: template,
 		data: data
 	}, function( data ) {
+		console.log(data);
 		if (data.success) {
 			$('#output').val(data.results);
 			// show green tick (/)
 			$('#passed').fadeIn(300);
 			$('#failed').hide();
 		} else {
-			$('#output').val('');
 			// show red (x)
 			$('#failed').fadeIn(300);
 			$('#passed').hide();

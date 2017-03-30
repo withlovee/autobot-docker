@@ -57,13 +57,11 @@ function getData(pathObj, data) {
 	var pathArr = pathObj.path.split('\\');
 	var cursor = data;
 	for (i in pathArr) {
-		console.log('--------------' + pathArr[i]);
-		console.log(cursor);
 		if (pathArr[i] == '' || pathArr[i].slice(-1) == '$' || pathArr[i] == 'root') continue;
 		if (pathArr[i] in cursor) {
 			cursor = cursor[pathArr[i]];
 		} else {
-			return null;
+			throw err;
 		}
 	}
 	

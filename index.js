@@ -22,7 +22,7 @@ app.post('/api/save', function (req, res) {
 	// TODO: check security issue here -- anyone can write
 	console.log(req.body);
 
-	fs.writeFile("template.json", JSON.stringify(req.body), function(err) {
+	fs.writeFile(req.body.templateName + ".json", JSON.stringify(req.body), function(err) {
 		if(err) {
 			console.log(err);
 			res.json({'success': false});
@@ -45,63 +45,85 @@ app.get('/api/get', function (req, res) {
 
 })
 
-function getData(path, data) {
-	if (!path) {
+function getData(pathObj, data) {
+	if (!pathObj) {
 		return null;
 	} 
 
-	var pathArray = path.split('\\');
-	console.log(pathArray)
+	var pathArr = pathObj.path.split('\\');
+	console.log(pathArr);
+	var cursor = data;
+	for (i in pathArr) {
+		if (pathArr[i] == '' || pathArr[i] == '$' || pathArr[i] == 'root') continue;
+		if (pathArr[i] in cursor) {
+			cursor = cursor[pathArr[i]];
+		} else {
+			return null;
+		}
+		console.log(cursor);
+	}
+	
+	return cursor;
+}
+
+function getProductData(parentPath, dataPath, data) {
+	if (!dataPath) return null;
+	var relativePath = dataPath.path.replace(parentPath.path, '');
+
+	return getData(relativePath, data);
+}
+
+function loopProduct(mapping, data) {
+	if (mapping.products) {
+		var productNode = getData(mapping.products, data);
+		var products = [];
+
+		for (i in productNode) {
+			products.push({
+				id: getProductData(mapping.products, mapping.product_id, productNode),
+				price: getProductData(mapping.products, mapping.price, productNode),
+				quantity: getProductData(mapping.products, mapping.quantity, productNode)
+			});
+		}
+	}
 }
 
 function convert(mapping, data) {
-	var result = {
+	var product = loopProduct(mapping, data);
+
+	var event = {
+		"event": getData(mapping.event_type, data),
+		"id": getData(mapping.transaction_id, data),
+		"currency": getData(mapping.currency, data),
+		"product": getData(mapping.products, data)
+	};
+
+	return {
 		"account":{
 			"an": getData(mapping.account_app, data),
-			"cn": "us",
-			"ln": "en"
+			"cn": getData(mapping.account_currency, data),
+			"ln": getData(mapping.account_language, data)
 		},
-		"site_type": "aa",
+		"site_type": getData(mapping.site_type, data),
 		"id": {
-			"gaid": "e16332c1-dd78-4288-a4e3-6190ed632b7e"
+			"gaid": getData(mapping.gaid, data)
 		},
-		"events": [
-			{
-				"event": "trackTransaction",
-				"dd": 1,
-				"nc ": 0,
-				"id": "transaction-uid",
-				"currency": "USD",
-				"product": [
-					{
-						"id": "1234",
-						"price": 10.2,
-						"quantity": 1
-					},
-					{
-						"id": "2345",
-						"price": 11.2,
-						"quantity": 2
-					}
-				]
-			}
-		],
-		"ip":"192.168.0.1",
-		"version":"s2s_v1.0.0"
+		"events": [ event ]
 	};
 
 }
 
 app.get('/api/convert', function (req, res) {
+
+		console.log(req.query.template);
 	// should we handle file not found?
 	fs.readFile(req.query.template + '.json', function read(err, data) {
 		if (err) {
 			throw err;
 		}
-		
 		var json = JSON.parse(data);
 
-		convert(json.mapping, req.query.data);
+		res.json(convert(json.mapping, JSON.parse(req.query.data)));
 	});
 
 })

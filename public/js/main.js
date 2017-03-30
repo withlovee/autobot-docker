@@ -113,12 +113,28 @@ function renderTree(boxes) {
 	}
 }
 
+function renderMappings(boxes, template) {
+    for (m in template.mapping) {
+        for (i in boxes) {
+            if (boxes[i].path == template.mapping[m]) {
+                var btn = `<button class="element" id="el`+i+`" draggable="true" ondragstart="drag(event)" data-path="`+boxes[i].path+`">`+boxes[i].name+` (`+boxes[i].type+`)</button>`;
+                $(".mapping-tree #" + m).html(btn);
+                break;
+            }
+        }
+    }
+}
+
 function getTree(data) {
 	var input = $('#input').val();
 	$.get('/api/getSchema?json=' + input, function( data ) {
 		var result = flattenSchema('root', data.schema, 0, null, '');
-		// console.log(data);
 		renderTree(result);
+
+		$.get('/api/get?template=template', function(template) {
+		    renderMappings(result, template);
+
+		});
 	});
 }
 

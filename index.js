@@ -30,22 +30,25 @@ app.post('/api/save', function (req, res) {
 		}
 
 		res.json({'success': true});
+		fs.close(0);
 	});
 
 })
 
 app.get('/api/get', function (req, res) {
-
+	console.log('api/get');
+	console.log(req.query.template);
 	fs.readFile(req.query.template + '.json', function read(err, data) {
 		if (err) {
+			console.log(err);
 			res.json({});
-			fs.close(0);
+			// fs.close(0);
 			return;
 		}
 		
 		res.json(JSON.parse(data));
 
-		fs.close(0);
+		// fs.close(0);
 	});
 
 })

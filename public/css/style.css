@@ -9,16 +9,16 @@ a, button {
 }
 
 .convert-arrow {
-	font-size: 50px;
-	margin-top: 70px;
+	font-size: 90px;
+	margin-top: 190px;
 	color: rgba(255,143,28, 0.9);
 }
 .input-output-box {
 	margin-top: 20px;
 	margin-bottom: 20px;
+	position: relative;
 }
 .template-select-box {
-	margin-top: 30px;
 	margin-bottom: 20px;
 }
 .btn:focus, .btn:active, .btn:active:focus {
@@ -39,6 +39,7 @@ textarea.form-control {
 	background-color: rgba(255,143,28, 0.1);
 	border-color: rgba(219,138,57, 0.2);
 	font-family: 'Consolas', 'Menlo', 'Monaco', sans-serif;
+	height: 500px;
 }
 textarea.form-control:focus {
 	border-color: rgba(219,138,57, 0.2);
@@ -147,4 +148,38 @@ textarea.form-control:focus {
 
 .remove-field-button:hover {
 	color: red;
+}
+
+.status {
+	font-size: 250px;
+	opacity: 0.3;
+	position: absolute;
+	bottom: 70px;
+	right: 30px;
+	display: none;
+	line-height: 0;
+}
+
+#failed {
+	color: red;
+}
+
+#passed {
+	color: green;
+}
+
+.bottom-button {
+	position: relative;
+}
+
+.output-heading {
+	font-size: 20px;
+	font-weight: bold;
+	margin-top: 5px;
+	margin-bottom: 25px;
+}
+
+.fire {
+	position: relative;
+	z-index: 10;
 }

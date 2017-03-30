@@ -1,6 +1,7 @@
 var express = require('express')
 var bodyParser = require('body-parser')
 var GenerateSchema = require('generate-schema');
+var jsonFormat = require('json-format');
 var fs = require('fs');
 var app = express()
 
@@ -37,10 +38,14 @@ app.get('/api/get', function (req, res) {
 
 	fs.readFile(req.query.template + '.json', function read(err, data) {
 		if (err) {
-			throw err;
+			res.json({});
+			fs.close(0);
+			return;
 		}
 		
 		res.json(JSON.parse(data));
+
+		fs.close(0);
 	});
 
 })
@@ -145,12 +150,18 @@ app.get('/api/convert', function (req, res) {
 	// should we handle file not found?
 	fs.readFile(req.query.template + '.json', function read(err, data) {
 		if (err) {
-			throw err;
+			res.json({ success: false })
+			return;
 		}
 		try {
 			var json = JSON.parse(data);
+			var outputData = convert(json.mapping, JSON.parse(req.query.data));
+			var config = {
+			    type: 'space',
+			    size: 4
+			}
 
-			res.json({ success: true, results: convert(json.mapping, JSON.parse(req.query.data))});
+			res.json({ success: true, results: jsonFormat(outputData, config)});
 
 		} catch(ex) {
 			res.json({ success: false })

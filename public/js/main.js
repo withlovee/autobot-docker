@@ -21,7 +21,6 @@ $('#edit-template-modal').on('click', '.remove-field-button', function() {
 $('#edit-template-modal').on('click', '.add-button button', function() {
 	var depth = $(this).data('depth');
 	var target = $(this).data('target');
-	$(target).empty();
 	$(target).append(`
 		<div class="field-box extra-field-box" style="margin-left: ' +depth+ 'px">
 			<input type="text" class="form-control extra-input" placeholder="extra_field1">
@@ -114,20 +113,59 @@ function renderTree(boxes) {
 	}
 }
 
-function renderMappings(template) {
-	var i = 0;
-	for (m in template.mapping) {
-		for (i in boxes) {
-			if (template.mapping[m].path === undefined) {
-				continue;
-			} else if (boxes[i].path == template.mapping[m].path) {
-				var btn = `<button class="element" id="nel`+i+`" draggable="true" ondragstart="drag(event)" data-path="`+boxes[i].path+`">`+boxes[i].name+` (`+boxes[i].type+`)</button>`;
-				$(".mapping-tree #" + m).html(btn);
-				$('#el'+i).remove();
-				break;
+function getIdMapping(boxes) {
+	var map = {};
+	for (i in boxes) {
+		map[boxes[i].path] = i;
+	}
+
+	return map;
+}
+
+function renderExtraData(template, map) {
+	$('#box2').empty();
+	if (template.mapping && template.mapping.extra) {
+		var extra = template.mapping.extra;
+		for(extraKey in extra) {
+			var i = new Date().getTime();
+			var ex = extra[extraKey];
+			if (ex.path in map) {
+				i = map[ex.path];
 			}
+			if ('path' in ex) {
+				$('#box2').append(`
+					<div class="field-box extra-field-box">
+						<input type="text" class="form-control extra-input" placeholder="extra_field1" value="`+extraKey+`">
+						<div class="drop-box" id="extra1" ondrop="drop(event)" ondragover="allowDrop(event)">
+							<button class="element" id="el`+i+`" draggable="true" ondragstart="drag(event)" data-path="`+ex.path+`">`+ex.name+`</button>
+						</div>
+						<button type="button" class="btn btn-link remove-field-button"><i class="glyphicon glyphicon-remove"></i></button>
+					</div><!-- field-box -->`);
+				$('#el' + i).remove();
+			} 
+		}
+	}	
+}
+
+function renderMappings(template, map) {
+	$('.mapping-tree .drop-box').empty();
+	for (m in template.mapping) {
+		if ('path' in template.mapping[m]) {
+			var i = 0;
+
+			if (template.mapping[m].path in map) {
+				i = map[template.mapping[m].path];
+			} else {
+				i = new Date().getTime();
+			}	
+
+			var btn = `<button class="element" id="nel`+i+`" draggable="true" ondragstart="drag(event)" data-path="`+template.mapping[m].path+`">`+template.mapping[m].name+`</button>`;
+			$(".mapping-tree #" + m).html(btn);
+			$('#el'+i).remove(); // remove button on left side
 		}
 	}
+
+	renderExtraData(template, map);
 }
 
 function getTree(data) {
@@ -136,8 +174,11 @@ function getTree(data) {
 		var result = flattenSchema('root', data.schema, 0, null, '');
 		renderTree(result);
 
-		$.get('/api/get?template=template', function(template) {
-			renderMappings(template);
+		var map = getIdMapping(result);
+		var template = $('#template').val();
+		console.log('template', template);
+		$.get('/api/get?template=' + template, function(template) {
+			renderMappings(template, map);
 
 		});
 	});
@@ -218,7 +259,7 @@ function save() {
 
 
 
-$('#edit-template-modal').on('shown.bs.modal', function () {
+$('#edit-template-modal').on('show.bs.modal', function () {
 	getTree();
 })
 
@@ -234,11 +275,15 @@ $('.fire').click(function() {
 		data: data
 	}, function( data ) {
 		if (data.success) {
-			$('#output').val(JSON.stringify(data.results));
+			$('#output').val(data.results);
 			// show green tick (/)
+			$('#passed').fadeIn(300);
+			$('#failed').hide();
 		} else {
 			$('#output').val('');
 			// show red (x)
+			$('#failed').fadeIn(300);
+			$('#passed').hide();
 		}
 	});
 });

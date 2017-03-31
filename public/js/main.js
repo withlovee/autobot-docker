@@ -32,6 +32,11 @@ $('#edit-template-modal').on('click', '.add-button button', function() {
 
 // $('#edit-template-modal').modal('show');
 
+function getTime() {
+	var dNow = new Date();
+	return new Date().toISOString().replace(':', '').replace(':', '').replace('.', '-');
+}
+
 function flattenSchema(name, schema, level, parentType, path) {
 	var result = [];
 	var offset = 30;
@@ -95,7 +100,6 @@ function flattenSchema(name, schema, level, parentType, path) {
 
 function renderTree(boxes) {
 	$('.schema-tree').empty();
-	// console.log(boxes);
 	if (!boxes || boxes.length == 0) {
 		$('.schema-tree').html('<p class="text-center">Please insert sample data</p>');
 	}
@@ -168,16 +172,15 @@ function renderMappings(template, map) {
 	renderExtraData(template, map);
 }
 
-function getTree(data) {
+function getTree(templateName) {
 	var input = $('#input').val();
 	$.get('/api/getSchema?json=' + input, function( data ) {
 		var result = flattenSchema('root', data.schema, 0, null, '');
 		renderTree(result);
 
 		var map = getIdMapping(result);
-		var template = $('#template').val();
-		console.log('template', template);
-		$.get('/api/get?template=' + template, function(template) {
+		console.log('template', templateName);
+		$.get('/api/get?template=' + templateName, function(template) {
 			renderMappings(template, map);
 
 		});
@@ -239,29 +242,56 @@ function getMapping() {
 
 function save() {
 	var mapping = getMapping();
+	var templateName = $('#template_name').val();
+
 	$.ajax({
 		url: 'api/save',
 		dataType: 'json',
 		method: 'post',
 		contentType: 'application/json',
 		data: JSON.stringify({
-			templateName: $('#template').val(),
+			templateName: templateName,
 			mapping: mapping
 		}),
 		//TODO handle if failed
 		success: function(res) {
-			$('#edit-template-modal').modal('hide');
-			console.log(res);
+			if (res.success) {
+				if ($('#template option[value="' + templateName + '"]').length == 0) {
+					$('#template').append('<option value="' + templateName + '">' + templateName + '</option>')
+					$('#template').val(templateName);
+				}
+				$('#edit-template-modal').modal('hide');
+				console.log(res);
+
+			} else {
+				alert('Oops! Something went wrong.');
+			}
 		},
 		dataType: 'json'
 	});
 }
 
+function openModal(name) {
+	$('#edit-template-modal').modal('show');
+	getTree(name);
+}
 
 
-$('#edit-template-modal').on('show.bs.modal', function () {
-	getTree();
-})
+$('.new-button').click(function() {
+	$('#template_name').val('New Template ' + getTime());
+	$('#template_name').prop('disabled', false);
+	openModal();
+});
+
+$('.edit-button').click(function() {
+	var templateName = $('#template').val();
+	$('#template_name').val(templateName);
+	$('#template_name').prop('disabled', true);
+	openModal(templateName);
+});
+// $('#edit-template-modal').on('show.bs.modal', function () {
+// 	getTree();
+// })
 
 $('.save').click(function() {
 	save();

@@ -17,16 +17,16 @@
 					<div class="form-group">
 						<label for="exampleInputName2">Input</label>
 						<select name="" id="template" class="form-control">
-							<option value="agoda" selected>Agoda</option>
-							<option value="appsflyer">AppsFlyer</option>
-							<option value="adjust">Adjust</option>
-							<option value="branch">Branch</option>
-							<option value="apsalar">Apsalar</option>
-							<option value="lazada">Lazada</option>
+							<option value="Agoda" selected>Agoda</option>
+							<option value="AppsFlyer">AppsFlyer</option>
+							<option value="Adjust">Adjust</option>
+							<option value="Branch">Branch</option>
+							<option value="Apsalar">Apsalar</option>
+							<option value="Lazada">Lazada</option>
 						</select>
 					</div>
-					<button type="button" class="btn btn-info" data-toggle="modal" data-target="#edit-template-modal"><i class="glyphicon glyphicon-pencil"></i> Edit</button>
-					<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> New Template</button>
+					<button type="button" class="btn btn-info edit-button"><i class="glyphicon glyphicon-pencil"></i> Edit</button>
+					<button type="button" class="btn btn-default new-button"><i class="glyphicon glyphicon-plus"></i> New Template</button>
 				</form>
 				<textarea name="" id="input" cols="200" rows="10" class="form-control">{
    "af_app": "com.agoda.app",
@@ -76,7 +76,10 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">Edit: Template 2</h4>
+					<h4 class="modal-title form-inline">
+						<label for="">Edit: </label>
+						<input type="text" class="form-control" id="template_name" value="" placeholder="Template Name">
+					</h4>
 				</div>
 				<div class="modal-body">
 					<div class="row">
@@ -163,13 +166,12 @@
 					<!-- /.row -->
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 					<button type="button" class="btn btn-primary save">Save changes</button>
 				</div>
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
-
+	<!-- version 1.4 -->
 	<script src="js/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/main.js?<%= new Date().getTime() %>"></script>

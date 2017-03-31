@@ -183,3 +183,7 @@ textarea.form-control:focus {
 	position: relative;
 	z-index: 10;
 }
+
+#template {
+	max-width: 200px;
+}

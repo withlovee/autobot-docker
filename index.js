@@ -14,6 +14,8 @@ app.get('/', function (req, res) {
 })
 
 app.get('/api/getSchema', function (req, res) {
+	console.log('api/get/schema')
+	console.log(req.query.json)
 	var schema = GenerateSchema.json('Data', req.query.json ? JSON.parse(req.query.json) : '');
 
 	res.json({'schema': schema});
@@ -22,33 +24,32 @@ app.get('/api/getSchema', function (req, res) {
 app.post('/api/save', function (req, res) {
 	// TODO: check security issue here -- anyone can write
 	console.log(req.body);
+	if (req.body.templateName) {
+		fs.writeFile('templates/' + req.body.templateName + ".json", JSON.stringify(req.body), function(err) {
+			if(err) {
+				console.log(err);
+				res.json({'success': false});
+			}
 
-	fs.writeFile(req.body.templateName + ".json", JSON.stringify(req.body), function(err) {
-		if(err) {
-			console.log(err);
-			res.json({'success': false});
-		}
-
-		res.json({'success': true});
-		fs.close(0);
-	});
-
+			res.json({'success': true});
+			fs.close(0);
+		});
+	} else {
+		res.json({'success': false, 'errors': 'templateName invalid: ' + req.body.templateName});
+	}
 })
 
 app.get('/api/get', function (req, res) {
 	console.log('api/get');
 	console.log(req.query.template);
-	fs.readFile(req.query.template + '.json', function read(err, data) {
+	fs.readFile('templates/' + req.query.template + '.json', function read(err, data) {
 		if (err) {
 			console.log(err);
 			res.json({});
-			// fs.close(0);
 			return;
 		}
 		
 		res.json(JSON.parse(data));
-
-		// fs.close(0);
 	});
 
 })
@@ -149,7 +150,7 @@ function convert(mapping, data) {
 app.get('/api/convert', function (req, res) {
 
 	// should we handle file not found?
-	fs.readFile(req.query.template + '.json', function read(err, data) {
+	fs.readFile('templates/' + req.query.template + '.json', function read(err, data) {
 		if (err) {
 			res.json({ success: false })
 			return;
